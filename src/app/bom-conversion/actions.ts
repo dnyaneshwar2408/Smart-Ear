@@ -11,7 +11,6 @@ const ebomSchema = z.object({
 const componentIdSchema = z.object({
     ebom: z.string(),
     mbom: z.string(),
-    cadDrawing: z.string(),
 });
 
 export async function performEBOMConversion(input: GenerateMBOMFromEBOMInput) {

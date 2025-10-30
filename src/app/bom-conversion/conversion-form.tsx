@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, UploadCloud, FileText, List, AlertTriangle } from "lucide-react";
+import { Loader2, UploadCloud, List, AlertTriangle } from "lucide-react";
 import { performEBOMConversion, performComponentIdentification } from "./actions";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,15 +16,9 @@ import { Separator } from "@/components/ui/separator";
 
 const ebomSchema = z.object({
   ebomFile: z.any().refine(file => file?.length == 1, "eBOM file is required."),
-  ebomText: z.string().optional(),
-});
-
-const mbomSchema = z.object({
-  cadFile: z.any().refine(file => file?.length == 1, "CAD file is required."),
 });
 
 type EBOMFormData = z.infer<typeof ebomSchema>;
-type MBOMFormData = z.infer<typeof mbomSchema>;
 
 const fileToDataURI = (file: File) => {
   return new Promise<string>((resolve, reject) => {
@@ -38,6 +32,7 @@ const fileToDataURI = (file: File) => {
 export function ConversionForm() {
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [ebomDataUri, setEbomDataUri] = useState<string>('');
@@ -48,9 +43,7 @@ export function ConversionForm() {
     incompleteInformation: string[];
   } | null>(null);
 
-
   const ebomMethods = useForm<EBOMFormData>({ resolver: zodResolver(ebomSchema) });
-  const mbomMethods = useForm<MBOMFormData>({ resolver: zodResolver(mbomSchema) });
 
   const handleEbomSubmit = async (data: EBOMFormData) => {
     setIsLoading(true);
@@ -68,40 +61,44 @@ export function ConversionForm() {
       setStep(2);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An unknown error occurred.");
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
-  const handleMbomSubmit = async (data: MBOMFormData) => {
-    setIsLoading(true);
+  const handleAnalysis = async () => {
+    if (!ebomText || !generatedMBOM) return;
+    setIsAnalyzing(true);
     setError(null);
     try {
-        const file = data.cadFile[0];
-        const cadDataUri = await fileToDataURI(file);
-        
         const result = await performComponentIdentification({
             ebom: ebomText,
             mbom: generatedMBOM,
-            cadDrawing: cadDataUri,
         });
         setAnalysisResult(result);
         setStep(3);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An unknown error occurred.");
     }
+    setIsAnalyzing(false);
     setIsLoading(false);
   };
+
+  useEffect(() => {
+    if (step === 2 && generatedMBOM && ebomText) {
+      handleAnalysis();
+    }
+  }, [step, generatedMBOM, ebomText]);
 
   const handleReset = () => {
     setStep(1);
     setIsLoading(false);
+    setIsAnalyzing(false);
     setError(null);
     setGeneratedMBOM("");
     setAnalysisResult(null);
     setEbomDataUri('');
     setEbomText('');
     ebomMethods.reset();
-    mbomMethods.reset();
   }
 
   return (
@@ -145,40 +142,19 @@ export function ConversionForm() {
                 <Label htmlFor="generatedMBOM">Generated mBOM</Label>
                 <Textarea id="generatedMBOM" value={generatedMBOM} readOnly rows={15} className="font-mono bg-muted/50" />
             </div>
+             {isAnalyzing && (
+                <div className="flex items-center gap-2 mt-4 text-muted-foreground">
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Analyzing for missing components...
+                </div>
+            )}
         </div>
-      )}
-
-      {step === 2 && (
-         <FormProvider {...mbomMethods}>
-          <form onSubmit={mbomMethods.handleSubmit(handleMbomSubmit)} className="space-y-4 pt-4">
-            <Separator className="my-4"/>
-            <h3 className="text-xl font-semibold">Step 3: Identify Missing Components</h3>
-            <p className="text-muted-foreground">Upload the corresponding CAD drawing to identify any missing or incomplete information in the generated mBOM.</p>
-             <div className="space-y-2">
-              <Label htmlFor="cadFile">CAD Drawing</Label>
-              <div className="flex items-center gap-2">
-                <UploadCloud className="h-5 w-5 text-muted-foreground" />
-                <Input id="cadFile" type="file" {...mbomMethods.register("cadFile")} />
-              </div>
-              {mbomMethods.formState.errors.cadFile && (
-                <p className="text-sm text-destructive">{mbomMethods.formState.errors.cadFile.message}</p>
-              )}
-            </div>
-            <div className="flex gap-4">
-                <Button type="submit" disabled={isLoading}>
-                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Analyze for Missing Components
-                </Button>
-                <Button variant="outline" onClick={handleReset}>Start Over</Button>
-            </div>
-          </form>
-        </FormProvider>
       )}
 
       {step === 3 && analysisResult && (
         <div className="pt-4">
           <Separator className="my-4"/>
-          <h3 className="text-xl font-semibold mb-4">Step 4: Analysis Complete</h3>
+          <h3 className="text-xl font-semibold mb-4">Step 3: Analysis Complete</h3>
           <div className="grid md:grid-cols-2 gap-6">
             <Card>
                 <CardHeader>
