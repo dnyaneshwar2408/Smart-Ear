@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { sourcingData } from "@/lib/data";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const getBadgeVariant = (status: string) => {
   switch (status) {
@@ -62,8 +63,8 @@ export default function SourcingPage() {
                     </TableCell>
                     <TableCell className="text-right">
                         {item.status === 'In Stock' && <Button variant="ghost" size="sm">Allocate Stock</Button>}
-                        {item.status === 'Partial Stock' && <Button variant="outline" size="sm">Source Externally</Button>}
-                        {item.status === 'Out of Stock' && <Button variant="default" size="sm">Create Purchase Order</Button>}
+                        {item.status === 'Partial Stock' && <Button asChild variant="outline" size="sm"><Link href="/procurement">Source Externally</Link></Button>}
+                        {item.status === 'Out of Stock' && <Button asChild variant="default" size="sm"><Link href="/procurement">Create Purchase Order</Link></Button>}
                     </TableCell>
                 </TableRow>
                 ))}

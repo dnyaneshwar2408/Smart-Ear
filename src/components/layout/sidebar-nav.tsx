@@ -28,8 +28,8 @@ const links = [
     label: 'Inventory Forecast',
     icon: PackageSearch,
   },
-  { href: '/procurement', label: 'Procurement', icon: ShoppingCart },
   { href: '/sourcing', label: 'Smart Sourcing', icon: ListChecks },
+  { href: '/procurement', label: 'Procurement', icon: ShoppingCart },
   { href: '/change-management', label: 'Change Management', icon: GitBranch },
   { href: '/reports', label: 'Reports & Analytics', icon: BarChart2 },
 ];
