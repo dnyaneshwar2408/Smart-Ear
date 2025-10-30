@@ -93,7 +93,7 @@ export default function ReportsPage() {
         <Card className="md:col-span-2 lg:col-span-3">
             <CardHeader>
                 <CardTitle>Top 10 Highest Cost Components</CardTitle>
-            </Header>
+            </CardHeader>
             <CardContent>
                 <ChartContainer config={componentCostChartConfig} className="h-72 w-full">
                     <ResponsiveContainer>
