@@ -1,3 +1,5 @@
+"use client"
+
 import {
   Card,
   CardContent,
@@ -6,7 +8,6 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import {
-  BarChart,
   DollarSign,
   ListChecks,
   Package,

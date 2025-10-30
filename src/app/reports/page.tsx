@@ -1,3 +1,5 @@
+"use client"
+
 import PageHeader from "@/components/page-header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
@@ -91,7 +93,7 @@ export default function ReportsPage() {
         <Card className="md:col-span-2 lg:col-span-3">
             <CardHeader>
                 <CardTitle>Top 10 Highest Cost Components</CardTitle>
-            </CardHeader>
+            </Header>
             <CardContent>
                 <ChartContainer config={componentCostChartConfig} className="h-72 w-full">
                     <ResponsiveContainer>
