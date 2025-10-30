@@ -1,4 +1,3 @@
-
 "use server";
 
 import { z } from "zod";
@@ -49,7 +48,6 @@ export async function createPurchaseOrder(prevState: PurchaseOrderState, formDat
 
     // Add to the beginning of the log
     changeLog.unshift(newLogEntry);
-
 
     // For this example, we'll just redirect to a success page.
     redirect('/procurement/success');
