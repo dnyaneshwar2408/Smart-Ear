@@ -7,6 +7,7 @@ import {
   Layers,
   ListChecks,
   PackageSearch,
+  ShoppingCart,
   Settings,
   Wrench,
 } from 'lucide-react';
@@ -27,6 +28,7 @@ const links = [
     label: 'Inventory Forecast',
     icon: PackageSearch,
   },
+  { href: '/procurement', label: 'Procurement', icon: ShoppingCart },
   { href: '/sourcing', label: 'Smart Sourcing', icon: ListChecks },
   { href: '/change-management', label: 'Change Management', icon: GitBranch },
   { href: '/reports', label: 'Reports & Analytics', icon: BarChart2 },
@@ -43,7 +45,7 @@ export default function SidebarNav() {
             <SidebarMenuItem key={link.href}>
               <Link href={link.href} passHref>
                 <SidebarMenuButton
-                  isActive={pathname === link.href}
+                  isActive={pathname.startsWith(link.href) && (link.href !== '/' || pathname === '/')}
                   tooltip={link.label}
                 >
                   <link.icon />

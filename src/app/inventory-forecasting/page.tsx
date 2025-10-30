@@ -9,6 +9,8 @@ import { Calendar } from "@/components/ui/calendar";
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { forecastData } from "@/lib/data";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 
 const chartConfig = {
     footprint: {
@@ -82,6 +84,22 @@ export default function InventoryForecastingPage() {
                     </Card>
                 </div>
             </div>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>Create Purchase Order</CardTitle>
+                    <CardDescription>Procure components from the main warehouse to be sent to stations A, B, or C.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="flex justify-center">
+                        <Button asChild size="lg">
+                            <Link href="/procurement">
+                                Create New Purchase Order <ArrowRight className="ml-2 h-4 w-4" />
+                            </Link>
+                        </Button>
+                    </div>
+                </CardContent>
+            </Card>
         </div>
     );
 }
