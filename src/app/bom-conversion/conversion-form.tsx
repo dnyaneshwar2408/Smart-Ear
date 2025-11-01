@@ -8,11 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, UploadCloud, List, AlertTriangle } from "lucide-react";
+import { Loader2, UploadCloud, List, AlertTriangle, Download } from "lucide-react";
 import { performEBOMConversion, performComponentIdentification } from "./actions";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 const ebomSchema = z.object({
   ebomFile: z.any().refine(file => file?.length == 1, "eBOM file is required."),
@@ -61,7 +63,8 @@ export function ConversionForm() {
       setStep(2);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An unknown error occurred.");
-      setIsLoading(false);
+    } finally {
+        setIsLoading(false);
     }
   };
 
@@ -80,14 +83,13 @@ export function ConversionForm() {
       setError(err instanceof Error ? err.message : "An unknown error occurred.");
     }
     setIsAnalyzing(false);
-    setIsLoading(false);
   };
 
   useEffect(() => {
-    if (step === 2 && generatedMBOM && ebomText) {
+    if (step === 2 && !isAnalyzing && generatedMBOM && ebomText) {
       handleAnalysis();
     }
-  }, [step, generatedMBOM, ebomText]);
+  }, [step, generatedMBOM, ebomText, isAnalyzing]);
 
   const handleReset = () => {
     setStep(1);
@@ -100,6 +102,74 @@ export function ConversionForm() {
     setEbomText('');
     ebomMethods.reset();
   }
+
+  const handleExportPDF = () => {
+    if (!analysisResult || !generatedMBOM) return;
+
+    const doc = new jsPDF();
+    const pageHeight = doc.internal.pageSize.height;
+    let y = 20;
+
+    doc.setFontSize(18);
+    doc.text("BOM Conversion Summary", 14, y);
+    y += 10;
+    
+    doc.setFontSize(14);
+    doc.text("Generated mBOM", 14, y);
+    y += 8;
+
+    const mBOMlines = doc.splitTextToSize(generatedMBOM, 180);
+    doc.setFontSize(10);
+    doc.text(mBOMlines, 14, y);
+    y += mBOMlines.length * 5 + 10;
+
+    if (y > pageHeight - 30) {
+      doc.addPage();
+      y = 20;
+    }
+
+    doc.setFontSize(14);
+    doc.text("Analysis Results", 14, y);
+    y+= 10;
+
+    autoTable(doc, {
+        startY: y,
+        head: [['Missing Components']],
+        body: analysisResult.missingComponents.map(c => [c]),
+        theme: 'striped',
+        headStyles: { fillColor: [22, 163, 74] },
+        didDrawPage: (data) => {
+            y = data.cursor?.y ?? y;
+        }
+    });
+
+    if (analysisResult.missingComponents.length === 0) {
+        doc.setFontSize(10);
+        doc.text("No missing components found.", 14, y);
+        y += 10;
+    }
+
+    if (y > pageHeight - 30) {
+      doc.addPage();
+      y = 20;
+    }
+    
+    autoTable(doc, {
+        startY: y + 5,
+        head: [['Incomplete Information']],
+        body: analysisResult.incompleteInformation.map(i => [i]),
+        theme: 'striped',
+        headStyles: { fillColor: [234, 179, 8] },
+    });
+
+    if (analysisResult.incompleteInformation.length === 0) {
+        y = doc.previousAutoTable.finalY + 5;
+        doc.setFontSize(10);
+        doc.text("No incomplete information found.", 14, y);
+    }
+
+    doc.save("BOM_Conversion_Summary.pdf");
+  };
 
   return (
     <div className="space-y-8">
@@ -185,7 +255,13 @@ export function ConversionForm() {
                 </CardContent>
             </Card>
           </div>
-          <Button onClick={handleReset} className="mt-6">Start New Conversion</Button>
+          <div className="flex items-center gap-4 mt-6">
+            <Button onClick={handleReset}>Start New Conversion</Button>
+            <Button onClick={handleExportPDF} variant="outline">
+                <Download className="mr-2 h-4 w-4" />
+                Export PDF Summary
+            </Button>
+          </div>
         </div>
       )}
     </div>
