@@ -36,10 +36,11 @@ export async function identifyMissingComponents(
 const prompt = ai.definePrompt({
   name: 'identifyMissingComponentsPrompt',
   input: {schema: IdentifyMissingComponentsInputSchema},
-  output: {schema: IdentifyMissingComponentsOutputSchema},
-  prompt: `You are a manufacturing engineer. You will receive an engineering bill of materials (eBOM) and a manufacturing bill of materials (mBOM). Your task is to identify any missing components in the mBOM compared to the eBOM, as well as any incomplete information in the mBOM. Return a list of missing components and a list of incomplete information.
+  prompt: `You are a manufacturing engineer. You will receive an engineering bill of materials (eBOM) and a manufacturing bill of materials (mBOM). Your task is to identify any missing components in the mBOM compared to the eBOM, as well as any incomplete information in the mBOM.
 
-eBOM:
+Your response MUST be a valid JSON object with two keys: "missingComponents" (an array of strings) and "incompleteInformation" (an array of strings).
+
+eBOM: 
 {{ebom}}
 
 mBOM:
@@ -54,7 +55,26 @@ const identifyMissingComponentsFlow = ai.defineFlow(
     outputSchema: IdentifyMissingComponentsOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    return output!;
+    const llmResponse = await prompt(input);
+    // The ollama plugin returns a complex object. We need to extract the text content.
+    // Based on the error logs, the text is in message.content[0].text.
+    const rawText = (llmResponse as any).message.content[0].text;
+    // The ollama plugin is smart and auto-parses JSON responses.
+    // The text content we need is already a JavaScript object.
+    const parsedResponse = (llmResponse as any).message.content[0].text;
+
+    try {
+      // The model might wrap the JSON in markdown, so we extract it.
+      const jsonText = rawText.match(/```json\n([\s\S]*?)\n```/)?.[1] ?? rawText;
+      const parsed = JSON.parse(jsonText);
+      return IdentifyMissingComponentsOutputSchema.parse(parsed);
+      // We just need to validate the object against our schema.
+      return IdentifyMissingComponentsOutputSchema.parse(parsedResponse);
+    } catch (e) {
+      console.error("Failed to parse LLM response as JSON:", rawText);
+      console.error("LLM response did not match schema:", parsedResponse, e);
+      // Return a default error state if parsing fails
+      return { missingComponents: ["Failed to parse AI response."], incompleteInformation: [] };
+    }
   }
 );

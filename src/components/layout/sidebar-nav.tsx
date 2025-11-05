@@ -23,11 +23,11 @@ const links = [
   { href: '/', label: 'Dashboard', icon: Home },
   { href: '/bom-conversion', label: 'BOM Conversion', icon: Wrench },
   { href: '/bom-visualization', label: 'BOM Visualization', icon: Layers },
-  {
-    href: '/inventory-forecasting',
-    label: 'Inventory Forecast',
-    icon: PackageSearch,
-  },
+  // {
+  //   href: '/inventory-forecasting',
+  //   label: 'Inventory Forecast',
+  //   icon: PackageSearch,
+  // },
   { href: '/sourcing', label: 'Smart Sourcing', icon: ListChecks },
   { href: '/procurement', label: 'Procurement', icon: ShoppingCart },
   { href: '/change-management', label: 'Change Management', icon: GitBranch },

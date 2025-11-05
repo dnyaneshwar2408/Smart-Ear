@@ -58,7 +58,7 @@ export function ConversionForm() {
       const text = await file.text();
       setEbomText(text);
 
-      const result = await performEBOMConversion({ ebomDataUri: dataUri });
+      const result = await performEBOMConversion({ ebomText: text });
       setGeneratedMBOM(result.mbom);
       setStep(2);
     } catch (err) {

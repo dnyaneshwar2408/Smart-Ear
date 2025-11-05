@@ -1,33 +1,21 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle } from "lucide-react";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
-export default function ProcurementSuccessPage() {
+export default function SuccessPage() {
   return (
-    <div className="flex items-center justify-center min-h-[60vh]">
-      <Card className="w-full max-w-md text-center">
-        <CardHeader>
-          <div className="mx-auto bg-green-100 dark:bg-green-900 rounded-full p-3 w-fit">
-            <CheckCircle className="h-10 w-10 text-green-600 dark:text-green-400" />
-          </div>
-          <CardTitle className="mt-4">Purchase Order Created</CardTitle>
-          <CardDescription>
-            Your request has been successfully submitted to the main warehouse.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-4">
-            <p className="text-sm text-muted-foreground">You can track the status of your procurement request in the Change Management log.</p>
-            <div className="flex gap-4 justify-center">
-                <Button asChild>
-                    <Link href="/procurement">Create Another Order</Link>
-                </Button>
-                <Button asChild variant="outline">
-                    <Link href="/">Return to Dashboard</Link>
-                </Button>
-            </div>
-        </CardContent>
-      </Card>
+    <div className="flex flex-col items-center justify-center h-[80vh] text-center">
+      <h1 className="text-3xl font-bold mb-4">✅ Purchase Order Created</h1>
+      <p className="mb-8 text-muted-foreground">
+        Your purchase order was successfully submitted and logged.
+      </p>
+      <div className="flex gap-4">
+        <Button asChild>
+          <Link href="/change-management">View Change Management</Link>
+        </Button>
+        <Button variant="outline" asChild>
+          <Link href="/procurement">Create Another Order</Link>
+        </Button>
+      </div>
     </div>
   );
 }

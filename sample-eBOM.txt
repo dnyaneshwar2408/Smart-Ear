@@ -1,0 +1,14 @@
+PART_ID,PART_NAME,QUANTITY,TYPE
+1000,Bicycle - "RoadRunner 1000",1,ASM
+  1100,Frame Assembly,1,ASM
+    1101,Main Frame,1,PART
+    1102,Handlebar,1,PART
+    1103,Seat,1,PART
+  1200,Wheel Assembly,2,ASM
+    1201,Rim,1,PART
+    1202,Tire,1,PART
+    1203,Spokes,32,PART
+  1400,Drivetrain Assembly,1,ASM
+    1401,Crankset,1,PART
+    1402,Pedals,2,PART
+    1403,Chain,1,PART

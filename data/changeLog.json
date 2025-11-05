@@ -1,0 +1,50 @@
+[
+  {
+    "id": "CHG-928",
+    "date": "2025-11-01",
+    "user": "Admin User",
+    "componentId": "RAM-32GB",
+    "version": "N/A",
+    "description": "Purchase order created for 45 units for station-b."
+  },
+  {
+    "id": "CHG-517",
+    "date": "2025-11-01",
+    "user": "Admin User",
+    "componentId": "GPU-RTX4090",
+    "version": "N/A",
+    "description": "Purchase order created for 1 units for station-b."
+  },
+  {
+    "id": "CHG-136",
+    "date": "2025-11-01",
+    "user": "Admin User",
+    "componentId": "GPU-RTX4090",
+    "version": "N/A",
+    "description": "Purchase order created for 2 units for station-c."
+  },
+  {
+    "id": "CHG-759",
+    "date": "2025-11-01",
+    "user": "Admin User",
+    "componentId": "RAM-32GB",
+    "version": "N/A",
+    "description": "Purchase order created for 18 units for station-a."
+  },
+  {
+    "id": "CHG-001",
+    "date": "2024-07-20",
+    "user": "Alice",
+    "componentId": "COMP-005",
+    "version": "1.1",
+    "description": "Changed material from Polyurethane to Silicone."
+  },
+  {
+    "id": "CHG-002",
+    "date": "2024-07-18",
+    "user": "Bob",
+    "componentId": "COMP-006",
+    "version": "1.2",
+    "description": "Updated bearing tolerance specifications."
+  }
+]

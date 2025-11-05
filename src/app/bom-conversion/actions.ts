@@ -5,7 +5,7 @@ import { identifyMissingComponents, IdentifyMissingComponentsInput } from "@/ai/
 import { z } from "zod";
 
 const ebomSchema = z.object({
-  ebomDataUri: z.string(),
+  ebomText: z.string(),
 });
 
 const componentIdSchema = z.object({

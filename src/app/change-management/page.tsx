@@ -1,6 +1,5 @@
-"use client";
+import { getChangeLog } from "@/lib/changeLogStore";
 
-import { useState, useMemo } from "react";
 import PageHeader from "@/components/page-header";
 import {
   Table,
@@ -11,25 +10,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { changeLog as initialChangeLog } from "@/lib/data";
-import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
 
-export default function ChangeManagementPage() {
-  const [changeLogData, setChangeLogData] = useState(initialChangeLog);
-  const [filter, setFilter] = useState("");
+export const dynamic = "force-dynamic"; // ✅ ensures revalidatePath works
 
-  const filteredLog = useMemo(() => {
-    if (!filter) return changeLogData;
-    const lowercasedFilter = filter.toLowerCase();
-    return changeLogData.filter(
-      (log) =>
-        log.id.toLowerCase().includes(lowercasedFilter) ||
-        log.user.toLowerCase().includes(lowercasedFilter) ||
-        log.componentId.toLowerCase().includes(lowercasedFilter) ||
-        log.description.toLowerCase().includes(lowercasedFilter)
-    );
-  }, [changeLogData, filter]);
+export default async function ChangeManagementPage() {
+  // Fetch latest data (simulating DB query)
+  const logs = await getChangeLog();
 
   return (
     <div className="flex flex-col gap-8">
@@ -37,25 +23,13 @@ export default function ChangeManagementPage() {
         title="Change Management"
         description="Track and manage all changes to the Bill of Materials with a complete audit trail."
       />
+
       <Card>
         <CardHeader>
-          <div className="flex justify-between items-center">
-            <div>
-              <CardTitle>BOM Audit Trail</CardTitle>
-              <CardDescription>
-                A log of all modifications made to components and BOMs.
-              </CardDescription>
-            </div>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Filter by component, user..."
-                className="pl-10"
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
-              />
-            </div>
-          </div>
+          <CardTitle>BOM Audit Trail</CardTitle>
+          <CardDescription>
+            A log of all modifications made to components and BOMs.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
@@ -70,7 +44,7 @@ export default function ChangeManagementPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredLog.map((log) => (
+              {logs.map((log) => (
                 <TableRow key={log.id}>
                   <TableCell className="font-mono">{log.id}</TableCell>
                   <TableCell>{log.date}</TableCell>
